@@ -6,7 +6,7 @@ edition = "2021"
 description = "A small bevy plugin for anchoring UI elements to specific points or entities in the world "
 license = "MIT"
 repository = "https://github.com/TotalKrill/bevy_ui_anchor"
-keywords = ["bevy", "ui", "anchor", "game development"]
+keywords = ["bevy", "ui"]
 categories = ["game-engine", "gui", "bevy"]
 readme = "README.md"
 
