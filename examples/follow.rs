@@ -1,9 +1,7 @@
 //! Demonstrates how to work with Cubic curves.
 use bevy::{
-    color::palettes::{
-        self,
-        css::{ORANGE, SILVER, WHITE},
-    },
+    color::palettes::css::{ORANGE, SILVER, WHITE},
+    dev_tools::ui_debug_overlay::{DebugUiPlugin, UiDebugOptions},
     math::vec3,
     prelude::*,
 };
@@ -16,8 +14,12 @@ struct Curve(CubicCurve<Vec3>);
 pub struct CameraMarker;
 
 fn main() {
+    let mut uidebug = UiDebugOptions::default();
+    // uidebug.toggle();
     App::new()
         .add_plugins(DefaultPlugins)
+        .insert_resource(uidebug)
+        .add_plugins(DebugUiPlugin)
         .add_plugins(AnchorUiPlugin::<CameraMarker>::new())
         .add_systems(Startup, setup)
         .add_systems(Update, animate_cube)
@@ -42,12 +44,11 @@ fn setup(
 
     // Make a CubicCurve
     let bezier = CubicBezier::new(points).to_curve();
-
     // Spawning a cube to experiment on
     let target = commands
         .spawn((
             PbrBundle {
-                mesh: meshes.add(Cuboid::default()),
+                mesh: meshes.add(Cuboid::new(0.1, 0.1, 0.1)),
                 material: materials.add(Color::from(ORANGE)),
                 transform: Transform::from_translation(points[0][0]),
                 ..default()
@@ -56,23 +57,30 @@ fn setup(
         ))
         .id();
 
-    commands.spawn((
-        TextBundle {
-            style: Style {
-                position_type: PositionType::Absolute,
-                height: Val::Px(100.0),
-                ..default()
+    commands
+        .spawn((
+            NodeBundle {
+                border_color: BorderColor(WHITE.into()),
+                border_radius: BorderRadius::all(Val::Px(2.)),
+                style: Style {
+                    border: UiRect::all(Val::Px(2.)),
+                    ..Default::default()
+                },
+                ..Default::default()
             },
-            text: Text::from_section("Text Anchored in bottom right", Default::default()),
-            background_color: BackgroundColor(palettes::css::BLUE.into()),
-            ..default()
-        },
-        AnchorUiNode {
-            target: bevy_ui_anchor::AnchorTarget::Entity(target),
-            anchorwidth: bevy_ui_anchor::HorizontalAnchor::Right,
-            anchorheight: bevy_ui_anchor::VerticalAnchor::Bottom,
-        },
-    ));
+            Outline::default(),
+            AnchorUiNode {
+                target: bevy_ui_anchor::AnchorTarget::Entity(target),
+                anchorwidth: bevy_ui_anchor::HorizontalAnchor::Right,
+                anchorheight: bevy_ui_anchor::VerticalAnchor::Bottom,
+            },
+        ))
+        .with_children(|p| {
+            p.spawn(TextBundle {
+                text: Text::from_section("Text Anchored in bottom right", Default::default()),
+                ..default()
+            });
+        });
 
     // Some light to see something
     commands.spawn(PointLightBundle {
@@ -96,6 +104,7 @@ fn setup(
     // The camera
     commands.spawn((
         CameraMarker,
+        IsDefaultUiCamera,
         Camera3dBundle {
             transform: Transform::from_xyz(0., 6., 12.).looking_at(Vec3::new(0., 3., 0.), Vec3::Y),
             ..default()

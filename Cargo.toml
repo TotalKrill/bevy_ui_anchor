@@ -1,6 +1,6 @@
 [package]
 name = "bevy_ui_anchor"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Kristoffer Ödmark <kristoffer.odmark90@gmail.com>"]
 edition = "2021"
 description = "A small bevy plugin for anchoring UI elements to specific points or entities in the world "
@@ -16,3 +16,4 @@ features = ["bevy_ui"]
 
 [dev-dependencies.bevy]
 version = "0.14"
+features = ["bevy_dev_tools"]

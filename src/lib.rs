@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::{prelude::*, transform::systems::propagate_transforms, window::PrimaryWindow};
 
 pub enum AnchorTarget {
     /// Anchor towards an entity with a [`Transform`] in the world
@@ -43,7 +43,10 @@ impl<SingleCameraMarker: Component> AnchorUiPlugin<SingleCameraMarker> {
 
 impl<SingleCameraMarker: Component> Plugin for AnchorUiPlugin<SingleCameraMarker> {
     fn build(&self, app: &mut App) {
-        app.add_systems(PostUpdate, system_move_ui_nodes::<SingleCameraMarker>);
+        app.add_systems(
+            PostUpdate,
+            system_move_ui_nodes::<SingleCameraMarker>.after(propagate_transforms),
+        );
     }
 }
 
