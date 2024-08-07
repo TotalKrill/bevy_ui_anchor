@@ -48,7 +48,7 @@ fn setup(
     let target = commands
         .spawn((
             PbrBundle {
-                mesh: meshes.add(Cuboid::new(0.1, 0.1, 0.1)),
+                mesh: meshes.add(Cuboid::new(0.3, 0.3, 0.3)),
                 material: materials.add(Color::from(ORANGE)),
                 transform: Transform::from_translation(points[0][0]),
                 ..default()
