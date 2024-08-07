@@ -7,7 +7,6 @@ description = "A small bevy plugin for anchoring UI elements to specific points 
 license = "MIT"
 repository = "https://github.com/TotalKrill/bevy_ui_anchor"
 keywords = ["bevy", "ui"]
-categories = ["game-engine", "gui", "bevy"]
 readme = "README.md"
 
 [dependencies.bevy]
