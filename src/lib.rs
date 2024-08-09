@@ -53,7 +53,7 @@ impl<SingleCameraMarker: Component> Plugin for AnchorUiPlugin<SingleCameraMarker
 fn system_move_ui_nodes<C: Component>(
     cameras: Query<(&Camera, &GlobalTransform), With<C>>,
     window: Query<&Window, With<PrimaryWindow>>,
-    mut uinodes: Query<(&mut Style, &Node, &AnchorUiNode)>,
+    mut uinodes: Query<(Entity, &mut Style, &Node, &AnchorUiNode)>,
     targets: Query<&GlobalTransform>,
 ) {
     let Ok(window) = window.get_single() else {
@@ -65,10 +65,17 @@ fn system_move_ui_nodes<C: Component>(
         return;
     };
 
-    for (mut style, node, uinode) in uinodes.iter_mut() {
+    for (uientity, mut style, node, uinode) in uinodes.iter_mut() {
         // what location should we sync to
         let world_location = match uinode.target {
-            AnchorTarget::Entity(e) => targets.get(e).unwrap().translation(),
+            AnchorTarget::Entity(e) => {
+                if let Ok(gt) = targets.get(e) {
+                    gt.translation()
+                } else {
+                    warn!("AnchorTarget({e}) was not found for uinode: {uientity}");
+                    continue;
+                }
+            }
             AnchorTarget::Translation(world_location) => world_location,
         };
 
