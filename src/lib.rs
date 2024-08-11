@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use bevy::{prelude::*, transform::systems::propagate_transforms, window::PrimaryWindow};
+use bevy::{prelude::*, window::PrimaryWindow};
 
 pub enum AnchorTarget {
     /// Anchor towards an entity with a [`Transform`] in the world
@@ -45,7 +45,7 @@ impl<SingleCameraMarker: Component> Plugin for AnchorUiPlugin<SingleCameraMarker
     fn build(&self, app: &mut App) {
         app.add_systems(
             PostUpdate,
-            system_move_ui_nodes::<SingleCameraMarker>.after(propagate_transforms),
+            system_move_ui_nodes::<SingleCameraMarker>.after(TransformSystem::TransformPropagate),
         );
     }
 }
@@ -115,14 +115,16 @@ fn system_move_ui_nodes<C: Component>(
     }
 }
 
-// only move if the change position is more than one pixel from each other, stops vibrations
+// only move if the change position is more than one pixel from each other,
+// stops vibrations
 fn check_if_not_close(a: Val, b: Val) -> bool {
     if a == b {
         return false;
     }
 
     match (a, b) {
-        (Val::Px(a), Val::Px(b)) => (a - b).abs() > 1.0, // If they are more than a pixel from eachother
+        // If they are more than a pixel from eachother
+        (Val::Px(a), Val::Px(b)) => (a - b).abs() > 1.0,
         _ => true,
     }
 }
