@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use bevy::{prelude::*, transform::systems::propagate_transforms, window::PrimaryWindow};
+use bevy::{prelude::*, window::PrimaryWindow};
 
 pub enum AnchorTarget {
     /// Anchor towards an entity with a [`Transform`] in the world
