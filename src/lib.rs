@@ -45,7 +45,7 @@ impl<SingleCameraMarker: Component> Plugin for AnchorUiPlugin<SingleCameraMarker
     fn build(&self, app: &mut App) {
         app.add_systems(
             PostUpdate,
-            system_move_ui_nodes::<SingleCameraMarker>.after(propagate_transforms),
+            system_move_ui_nodes::<SingleCameraMarker>, // .after(TransformSystem::TransformPropagate),
         );
     }
 }
