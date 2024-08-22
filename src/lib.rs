@@ -92,7 +92,11 @@ fn system_move_ui_nodes<C: Component>(
             style.position_type = PositionType::Absolute;
         }
 
-        let nodewidth = node.size().x;
+        let nodewidth = if let Val::Px(width) = style.width {
+            width
+        } else {
+            node.size().x
+        };
         let leftpos = match uinode.anchorwidth {
             HorizontalAnchor::Left => Val::Px(position.x),
             HorizontalAnchor::Mid => Val::Px(position.x - nodewidth / 2.0),
