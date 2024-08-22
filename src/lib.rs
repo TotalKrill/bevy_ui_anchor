@@ -92,7 +92,11 @@ fn system_move_ui_nodes<C: Component>(
             style.position_type = PositionType::Absolute;
         }
 
-        let nodewidth = node.size().x;
+        let nodewidth = if let Val::Px(width) = style.width {
+            width
+        } else {
+            node.size().x
+        };
         let leftpos = match uinode.anchorwidth {
             HorizontalAnchor::Left => Val::Px(position.x),
             HorizontalAnchor::Mid => Val::Px(position.x - nodewidth / 2.0),
@@ -105,9 +109,15 @@ fn system_move_ui_nodes<C: Component>(
 
         let window_height = window.height();
 
+        let nodeheight = if let Val::Px(height) = style.height {
+            height
+        } else {
+            node.size().y
+        };
+
         let newheight = match uinode.anchorheight {
-            VerticalAnchor::Top => Val::Px(window_height - position.y - node.size().y),
-            VerticalAnchor::Mid => Val::Px(window_height - position.y - node.size().y / 2.0),
+            VerticalAnchor::Top => Val::Px(window_height - position.y - nodeheight),
+            VerticalAnchor::Mid => Val::Px(window_height - position.y - nodeheight / 2.0),
             VerticalAnchor::Bottom => Val::Px(window_height - position.y),
         };
 
