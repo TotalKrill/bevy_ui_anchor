@@ -10,12 +10,12 @@ keywords = ["bevy", "ui"]
 readme = "README.md"
 
 [dependencies.bevy]
-version = "0.14"
+version = "0.15.0-rc.2"
 default-features = false
 features = ["bevy_ui"]
 
 [dev-dependencies.bevy]
-version = "0.14"
+version = "0.15.0-rc.2"
 features = ["bevy_dev_tools"]
 
 [dev-dependencies.bevy_rapier3d]
