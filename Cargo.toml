@@ -19,4 +19,5 @@ version = "0.15.0-rc.3"
 features = ["bevy_dev_tools"]
 
 [dev-dependencies.bevy_rapier3d]
-version = "0.27"
+git = "https://github.com/Vrixyz/bevy_rapier.git"
+branch = "master-bevy_0.15"
