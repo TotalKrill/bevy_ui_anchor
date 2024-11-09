@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use bevy::{prelude::*, ui::UiSystem, window::PrimaryWindow};
+use bevy::{ecs::query::QuerySingleError, prelude::*, ui::UiSystem, window::PrimaryWindow};
 
 pub enum AnchorTarget {
     /// Anchor towards an entity with a [`Transform`] in the world
@@ -58,13 +58,21 @@ fn system_move_ui_nodes<C: Component>(
     mut uinodes: Query<(Entity, &mut Style, &Node, &AnchorUiNode)>,
     targets: Query<&GlobalTransform>,
 ) {
-    let Ok(window) = window.get_single() else {
-        bevy::log::error!("more than one primary window");
-        return;
+    let window = match window.get_single() {
+        Ok(window) => window,
+        Err(QuerySingleError::NoEntities(_)) => return,
+        Err(err @ QuerySingleError::MultipleEntities(_)) => {
+            bevy::log::error!("more than one primary window: {err}");
+            return;
+        }
     };
-    let Ok((main_camera, main_camera_transform)) = cameras.get_single() else {
-        bevy::log::error!("more than one camera with the specified marker component");
-        return;
+    let (main_camera, main_camera_transform) = match cameras.get_single() {
+        Ok(camera) => camera,
+        Err(QuerySingleError::NoEntities(_)) => return,
+        Err(err @ QuerySingleError::MultipleEntities(_)) => {
+            bevy::log::error!("more than one camera with the specified marker component: {err}");
+            return;
+        }
     };
 
     for (uientity, mut style, node, uinode) in uinodes.iter_mut() {
