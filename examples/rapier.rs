@@ -1,7 +1,4 @@
-use bevy::{
-    color::palettes::css::{BLACK, WHITE},
-    prelude::*,
-};
+use bevy::{color::palettes::css::BLACK, prelude::*};
 use bevy_rapier3d::prelude::*;
 use bevy_ui_anchor::{AnchorUiNode, AnchorUiPlugin};
 
@@ -28,11 +25,8 @@ pub struct CameraMarker;
 pub fn setup_graphics(mut commands: Commands) {
     commands.spawn((
         CameraMarker,
-        Camera3dBundle {
-            transform: Transform::from_xyz(-30.0, 30.0, 100.0)
-                .looking_at(Vec3::new(0.0, 10.0, 0.0), Vec3::Y),
-            ..Default::default()
-        },
+        Camera3d::default(),
+        Transform::from_xyz(-30.0, 30.0, 100.0).looking_at(Vec3::new(0.0, 10.0, 0.0), Vec3::Y),
     ));
 }
 
@@ -44,7 +38,7 @@ pub fn setup_physics(mut commands: Commands) {
     let ground_height = 0.1;
 
     commands.spawn((
-        TransformBundle::from(Transform::from_xyz(0.0, -ground_height, 0.0)),
+        Transform::from_xyz(0.0, -ground_height, 0.0),
         Collider::cuboid(ground_size, ground_height, ground_size),
     ));
 
@@ -77,7 +71,7 @@ pub fn setup_physics(mut commands: Commands) {
 
                 let target = commands
                     .spawn((
-                        TransformBundle::from(Transform::from_xyz(x, y, z)),
+                        Transform::from_xyz(x, y, z),
                         RigidBody::Dynamic,
                         Collider::ball(rad),
                         ColliderDebugColor(colors[color % 3]),
@@ -85,15 +79,12 @@ pub fn setup_physics(mut commands: Commands) {
                     .id();
                 commands
                     .spawn((
-                        NodeBundle {
-                            border_color: BorderColor(BLACK.into()),
-                            border_radius: BorderRadius::all(Val::Px(2.)),
-                            style: Style {
-                                border: UiRect::all(Val::Px(2.)),
-                                ..Default::default()
-                            },
+                        Node {
+                            border: UiRect::all(Val::Px(2.)),
                             ..Default::default()
                         },
+                        BorderColor(BLACK.into()),
+                        BorderRadius::all(Val::Px(2.)),
                         Outline::default(),
                         AnchorUiNode {
                             target: bevy_ui_anchor::AnchorTarget::Entity(target),
@@ -102,17 +93,14 @@ pub fn setup_physics(mut commands: Commands) {
                         },
                     ))
                     .with_children(|p| {
-                        p.spawn(TextBundle {
-                            text: Text::from_section(
-                                format!("{target}"),
-                                TextStyle {
-                                    font_size: 10.,
-                                    color: BLACK.into(),
-                                    ..Default::default()
-                                },
-                            ),
-                            ..default()
-                        });
+                        p.spawn((
+                            Text(format!("{target}")),
+                            TextFont {
+                                font_size: 10.,
+                                ..Default::default()
+                            },
+                            TextColor(BLACK.into()),
+                        ));
                     });
             }
         }
