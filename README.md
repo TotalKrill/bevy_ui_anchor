@@ -29,7 +29,10 @@ use bevy::{
     math::vec3,
     prelude::*,
 };
-use bevy_ui_anchor::{AnchorUiNode, AnchorUiPlugin};
+
+use bevy_ui_anchor::{
+    AnchorTarget, AnchorUiNode, AnchorUiPlugin, HorizontalAnchor, VerticalAnchor,
+};
 
 #[derive(Component)]
 struct Curve(CubicCurve<Vec3>);
@@ -55,7 +58,8 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    // we will create a curve that the cube will move along
+    // Define your control points
+    // These points will define the curve the cube will follow
     // You can learn more about bezier curves here
     // https://en.wikipedia.org/wiki/B%C3%A9zier_curve
     let points = [[
@@ -64,10 +68,10 @@ fn setup(
         vec3(-12., 8., 0.),
         vec3(6., 2., 0.),
     ]];
+
     // Make a CubicCurve
     let bezier = CubicBezier::new(points).to_curve().unwrap();
-
-    // Spawning a cube that the UI will follow, make it follow the curve
+    // Spawning a cube that the UI node will be anchored to
     let target = commands
         .spawn((
             Mesh3d(meshes.add(Cuboid::new(0.3, 0.3, 0.3))),
@@ -86,7 +90,7 @@ fn setup(
             BorderColor(WHITE.into()),
             BorderRadius::all(Val::Px(2.)),
             Outline::default(),
-            // Anchor this UI node to the target entity
+            // Anchor this UI node to the cube entity
             AnchorUiNode {
                 target: AnchorTarget::Entity(target),
                 anchorwidth: HorizontalAnchor::Right,
