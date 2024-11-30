@@ -55,7 +55,7 @@ impl<SingleCameraMarker: Component> Plugin for AnchorUiPlugin<SingleCameraMarker
 fn system_move_ui_nodes<C: Component>(
     cameras: Query<(&Camera, &GlobalTransform), With<C>>,
     window: Query<&Window, With<PrimaryWindow>>,
-    mut uinodes: Query<(Entity, &mut Style, &Node, &AnchorUiNode)>,
+    mut uinodes: Query<(Entity, &mut Node, &ComputedNode, &AnchorUiNode)>,
     targets: Query<&GlobalTransform>,
 ) {
     let window = match window.get_single() {
@@ -75,7 +75,7 @@ fn system_move_ui_nodes<C: Component>(
         }
     };
 
-    for (uientity, mut style, node, uinode) in uinodes.iter_mut() {
+    for (uientity, mut node, computed_node, uinode) in uinodes.iter_mut() {
         // what location should we sync to
         let world_location = match uinode.target {
             AnchorTarget::Entity(e) => {
@@ -89,21 +89,21 @@ fn system_move_ui_nodes<C: Component>(
             AnchorTarget::Translation(world_location) => world_location,
         };
 
-        let Some(position) = main_camera.world_to_viewport(main_camera_transform, world_location)
+        let Ok(position) = main_camera.world_to_viewport(main_camera_transform, world_location)
         else {
             // Object is offscreen and should not be drawn
             bevy::log::debug!("world location is offscreen, and thus we dont change the position");
             continue;
         };
 
-        if style.as_ref().position_type != PositionType::Absolute {
-            style.position_type = PositionType::Absolute;
+        if node.as_ref().position_type != PositionType::Absolute {
+            node.position_type = PositionType::Absolute;
         }
 
-        let nodewidth = if let Val::Px(width) = style.width {
+        let nodewidth = if let Val::Px(width) = node.width {
             width
         } else {
-            node.size().x
+            computed_node.size().x
         };
         let leftpos = match uinode.anchorwidth {
             HorizontalAnchor::Left => Val::Px(position.x),
@@ -111,16 +111,16 @@ fn system_move_ui_nodes<C: Component>(
             HorizontalAnchor::Right => Val::Px(position.x - nodewidth),
         };
 
-        if check_if_not_close(style.as_ref().left, leftpos) {
-            style.left = leftpos;
+        if check_if_not_close(node.as_ref().left, leftpos) {
+            node.left = leftpos;
         }
 
         let window_height = window.height();
 
-        let nodeheight = if let Val::Px(height) = style.height {
+        let nodeheight = if let Val::Px(height) = node.height {
             height
         } else {
-            node.size().y
+            computed_node.size().y
         };
 
         let newheight = match uinode.anchorheight {
@@ -129,8 +129,8 @@ fn system_move_ui_nodes<C: Component>(
             VerticalAnchor::Bottom => Val::Px(window_height - position.y),
         };
 
-        if check_if_not_close(style.as_ref().bottom, newheight) {
-            style.bottom = newheight;
+        if check_if_not_close(node.as_ref().bottom, newheight) {
+            node.bottom = newheight;
         }
     }
 }
