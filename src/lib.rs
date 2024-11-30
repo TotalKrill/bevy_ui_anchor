@@ -89,7 +89,8 @@ fn system_move_ui_nodes<C: Component>(
             AnchorTarget::Translation(world_location) => world_location,
         };
 
-        let Ok(position) = main_camera.world_to_viewport(main_camera_transform, world_location)
+        let Ok(position) =
+            main_camera.world_to_viewport_with_depth(main_camera_transform, world_location)
         else {
             // Object is offscreen and should not be drawn
             bevy::log::debug!("world location is offscreen, and thus we dont change the position");
@@ -103,7 +104,7 @@ fn system_move_ui_nodes<C: Component>(
         let nodewidth = if let Val::Px(width) = node.width {
             width
         } else {
-            computed_node.size().x
+            computed_node.size().x * computed_node.inverse_scale_factor()
         };
         let leftpos = match uinode.anchorwidth {
             HorizontalAnchor::Left => Val::Px(position.x),
@@ -120,7 +121,7 @@ fn system_move_ui_nodes<C: Component>(
         let nodeheight = if let Val::Px(height) = node.height {
             height
         } else {
-            computed_node.size().y
+            computed_node.size().y * computed_node.inverse_scale_factor()
         };
 
         let newheight = match uinode.anchorheight {
