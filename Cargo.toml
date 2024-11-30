@@ -12,7 +12,7 @@ readme = "README.md"
 [dependencies.bevy]
 version = "0.15.0"
 default-features = false
-features = ["bevy_ui"]
+features = ["bevy_ui", "bevy_window"]
 
 [dev-dependencies.bevy]
 version = "0.15.0"
