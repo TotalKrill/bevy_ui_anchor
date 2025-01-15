@@ -27,6 +27,8 @@ pub struct AnchorUiNode {
     pub target: AnchorTarget,
     pub anchorwidth: HorizontalAnchor,
     pub anchorheight: VerticalAnchor,
+    /// Offset from the chosen target that the UI is anchored to
+    pub offset: Option<Vec3>,
 }
 
 pub struct AnchorUiPlugin<SingleCameraMarker: Component> {
@@ -87,6 +89,12 @@ fn system_move_ui_nodes<C: Component>(
                 }
             }
             AnchorTarget::Translation(world_location) => world_location,
+        };
+
+        let world_location = if let Some(offset) = uinode.offset {
+            world_location + offset
+        } else {
+            world_location
         };
 
         let Ok(position) =
