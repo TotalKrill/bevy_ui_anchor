@@ -14,7 +14,7 @@ A Rust crate for anchoring UI elements to specific points or entities in the wor
 - Supports horizontal and vertical anchoring.
 - Compatible with Bevy's ECS architecture.
 
-| Bevy version | bevy_mod_reqwest version |
+| Bevy version | Crate version |
 | ------------ | ------------------------ |
 | 0.15         | 0.3                      |
 | 0.14         | 0.1 - 0.2                |
@@ -93,6 +93,7 @@ fn setup(
             // Anchor this UI node to the cube entity
             AnchorUiNode {
                 target: AnchorTarget::Entity(target),
+                offset: None,
                 anchorwidth: HorizontalAnchor::Right,
                 anchorheight: VerticalAnchor::Bottom,
             },
