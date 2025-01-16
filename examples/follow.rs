@@ -69,6 +69,7 @@ fn setup(
             // Anchor this UI node to the cube entity
             AnchorUiNode {
                 target: AnchorTarget::Entity(target),
+                offset: None,
                 anchorwidth: HorizontalAnchor::Right,
                 anchorheight: VerticalAnchor::Bottom,
             },
