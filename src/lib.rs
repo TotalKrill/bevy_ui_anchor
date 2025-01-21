@@ -2,6 +2,7 @@ use std::marker::PhantomData;
 
 use bevy::{ecs::query::QuerySingleError, prelude::*, ui::UiSystem, window::PrimaryWindow};
 
+#[derive(Reflect)]
 pub enum AnchorTarget {
     /// Anchor towards an entity with a [`Transform`] in the world
     Entity(Entity),
@@ -10,19 +11,22 @@ pub enum AnchorTarget {
 }
 
 // Defines at what height of the node should be anchored
+#[derive(Reflect)]
 pub enum VerticalAnchor {
     Top,
     Mid,
     Bottom,
 }
 // Defines at what width the node should be anchored
+#[derive(Reflect)]
 pub enum HorizontalAnchor {
     Left,
     Mid,
     Right,
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct AnchorUiNode {
     pub target: AnchorTarget,
     pub anchorwidth: HorizontalAnchor,
@@ -51,6 +55,8 @@ impl<SingleCameraMarker: Component> Plugin for AnchorUiPlugin<SingleCameraMarker
                 .before(TransformSystem::TransformPropagate)
                 .before(UiSystem::Layout),
         );
+
+        app.register_type::<AnchorUiNode>();
     }
 }
 
