@@ -1,4 +1,7 @@
-use bevy::{color::palettes::css::BLACK, prelude::*};
+use bevy::{
+    color::{self, palettes::css::BLACK},
+    prelude::*,
+};
 use bevy_rapier3d::prelude::*;
 use bevy_ui_anchor::{AnchorUiNode, AnchorUiPlugin};
 
@@ -14,6 +17,7 @@ fn main() {
             RapierPhysicsPlugin::<NoUserData>::default(),
             RapierDebugRenderPlugin::default(),
         ))
+        .add_plugins(bevy_editor_cam::DefaultEditorCamPlugins)
         .add_plugins(AnchorUiPlugin::<CameraMarker>::new())
         .add_systems(Startup, (setup_graphics, setup_physics))
         .run();
@@ -23,14 +27,35 @@ fn main() {
 pub struct CameraMarker;
 
 pub fn setup_graphics(mut commands: Commands) {
+    let transform =
+        Transform::from_xyz(-30.0, 30.0, 100.0).looking_at(Vec3::new(0.0, 10.0, 0.0), Vec3::Y);
     commands.spawn((
         CameraMarker,
         Camera3d::default(),
-        Transform::from_xyz(-30.0, 30.0, 100.0).looking_at(Vec3::new(0.0, 10.0, 0.0), Vec3::Y),
+        bevy_editor_cam::prelude::EditorCam {
+            last_anchor_depth: -transform.translation.length() as f64,
+            ..default()
+        },
+        transform.clone(),
+    ));
+    let transform = Transform::from_xyz(-30.0, 30.0, 10.0);
+    commands.spawn((
+        PointLight {
+            shadows_enabled: true,
+            intensity: 100_000_000.,
+            range: 500.0,
+            shadow_depth_bias: 0.2,
+            ..default()
+        },
+        transform,
     ));
 }
 
-pub fn setup_physics(mut commands: Commands) {
+pub fn setup_physics(
+    mut commands: Commands,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+) {
     /*
      * Ground
      */
@@ -40,6 +65,8 @@ pub fn setup_physics(mut commands: Commands) {
     commands.spawn((
         Transform::from_xyz(0.0, -ground_height, 0.0),
         Collider::cuboid(ground_size, ground_height, ground_size),
+        Mesh3d(meshes.add(Plane3d::new(Vec3::Y, Vec2::splat(ground_size)))),
+        MeshMaterial3d(materials.add(StandardMaterial::from_color(color::palettes::basic::SILVER))),
     ));
 
     /*
@@ -61,6 +88,14 @@ pub fn setup_physics(mut commands: Commands) {
         Hsla::hsl(260.0, 1.0, 0.7),
     ];
 
+    let materials: Vec<Handle<StandardMaterial>> = colors
+        .iter()
+        .map(|c| materials.add(StandardMaterial::from_color(*c)))
+        .collect();
+
+    // let material = materials.add(StandardMaterial::from_color(color::palettes::basic::BLUE));
+    let mesh = meshes.add(Sphere::new(rad));
+
     for j in 0usize..20 {
         for i in 0..num {
             for k in 0usize..num {
@@ -74,7 +109,9 @@ pub fn setup_physics(mut commands: Commands) {
                         Transform::from_xyz(x, y, z),
                         RigidBody::Dynamic,
                         Collider::ball(rad),
-                        ColliderDebugColor(colors[color % 3]),
+                        Mesh3d(mesh.clone()),
+                        MeshMaterial3d(materials[color % colors.len()].clone()),
+                        // ColliderDebugColor(colors[color % 3]),
                     ))
                     .id();
                 commands
@@ -90,6 +127,7 @@ pub fn setup_physics(mut commands: Commands) {
                             target: bevy_ui_anchor::AnchorTarget::Entity(target),
                             anchorwidth: bevy_ui_anchor::HorizontalAnchor::Right,
                             anchorheight: bevy_ui_anchor::VerticalAnchor::Bottom,
+                            offset: None,
                         },
                     ))
                     .with_children(|p| {
