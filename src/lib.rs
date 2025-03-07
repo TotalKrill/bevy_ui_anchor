@@ -173,9 +173,9 @@ fn system_move_ui_nodes<C: Component>(
             HorizontalAnchor::Right => Val::Px(position.x - nodewidth),
         };
 
-        if check_if_not_close(node.as_ref().left, leftpos) {
-            node.left = leftpos;
-        }
+        // if check_if_not_close(node.as_ref().left, leftpos) {
+        node.left = leftpos;
+        // }
 
         let window_height = window.height();
 
@@ -191,21 +191,20 @@ fn system_move_ui_nodes<C: Component>(
             VerticalAnchor::Bottom => Val::Px(window_height - position.y),
         };
 
-        if check_if_not_close(node.as_ref().bottom, newheight) {
-            node.bottom = newheight;
-        }
+        // if check_if_not_close(node.as_ref().bottom, newheight) {
+        node.bottom = newheight;
+        // }
     }
 }
 
-// only move if the change position is more than one pixel from each other, stops vibrations
-fn check_if_not_close(a: Val, b: Val) -> bool {
-    return true;
-    if a == b {
-        return false;
-    }
+// // only move if the change position is more than one pixel from each other, stops vibrations
+// fn check_if_not_close(a: Val, b: Val) -> bool {
+//     if a == b {
+//         return false;
+//     }
 
-    match (a, b) {
-        (Val::Px(a), Val::Px(b)) => (a - b).abs() > 1.0, // If they are more than a pixel from eachother
-        _ => true,
-    }
-}
+//     match (a, b) {
+//         (Val::Px(a), Val::Px(b)) => (a - b).abs() > 1.0, // If they are more than a pixel from eachother
+//         _ => true,
+//     }
+// }
