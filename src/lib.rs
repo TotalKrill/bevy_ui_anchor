@@ -199,6 +199,7 @@ fn system_move_ui_nodes<C: Component>(
 
 // only move if the change position is more than one pixel from each other, stops vibrations
 fn check_if_not_close(a: Val, b: Val) -> bool {
+    return true;
     if a == b {
         return false;
     }
