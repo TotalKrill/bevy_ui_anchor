@@ -14,6 +14,7 @@ fn main() {
             RapierPhysicsPlugin::<NoUserData>::default(),
             RapierDebugRenderPlugin::default(),
         ))
+        .add_plugins(bevy_editor_cam::DefaultEditorCamPlugins)
         .add_plugins(AnchorUiPlugin::<CameraMarker>::new())
         .add_systems(Startup, (setup_graphics, setup_physics))
         .run();
@@ -26,6 +27,7 @@ pub fn setup_graphics(mut commands: Commands) {
     commands.spawn((
         CameraMarker,
         Camera3d::default(),
+        bevy_editor_cam::prelude::EditorCam::default(),
         Transform::from_xyz(-30.0, 30.0, 100.0).looking_at(Vec3::new(0.0, 10.0, 0.0), Vec3::Y),
     ));
 }
@@ -90,6 +92,7 @@ pub fn setup_physics(mut commands: Commands) {
                             target: bevy_ui_anchor::AnchorTarget::Entity(target),
                             anchorwidth: bevy_ui_anchor::HorizontalAnchor::Right,
                             anchorheight: bevy_ui_anchor::VerticalAnchor::Bottom,
+                            offset: None,
                         },
                     ))
                     .with_children(|p| {
