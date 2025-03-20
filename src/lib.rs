@@ -131,6 +131,11 @@ fn system_move_ui_nodes<C: Component>(
     };
 
     for (uientity, mut node, computed_node, uinode) in uinodes.iter_mut() {
+        if node.display == Display::None {
+            // The node is not displayed, skip it
+            continue;
+        }
+
         // what location should we sync to
         let world_location = match uinode.target {
             AnchorTarget::Entity(entity) => {
