@@ -1,6 +1,6 @@
 [package]
 name = "bevy_ui_anchor"
-version = "0.5.1"
+version = "0.6.0"
 authors = ["Kristoffer Ödmark <kristoffer.odmark90@gmail.com>"]
 edition = "2021"
 description = "A small bevy plugin for anchoring UI elements to specific points or entities in the world "
@@ -9,14 +9,17 @@ repository = "https://github.com/TotalKrill/bevy_ui_anchor"
 keywords = ["bevy", "ui"]
 readme = "README.md"
 
+[dependencies]
+update = "0.0.0"
+
 [dependencies.bevy]
-version = "0.15"
+version = "0.16.0"
 default-features = false
-features = ["bevy_ui", "bevy_window"]
+features = ["bevy_ui", "bevy_window", "bevy_log"]
 
 [dev-dependencies.bevy]
-version = "0.15"
-features = ["bevy_dev_tools"]
+version = "0.16.0"
+features = ["bevy_ui_debug", "bevy_ui"]
 
 [dev-dependencies.bevy_rapier3d]
 # git = "https://github.com/Vrixyz/bevy_rapier.git"

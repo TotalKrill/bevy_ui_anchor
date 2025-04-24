@@ -109,7 +109,7 @@ fn system_move_ui_nodes<C: Component>(
     mut uinodes: Query<(Entity, &mut Node, &ComputedNode, &AnchorUiNode)>,
     transformhelper: TransformHelper,
 ) {
-    let window = match window.get_single() {
+    let window = match window.single() {
         Ok(window) => window,
         Err(QuerySingleError::NoEntities(_)) => return,
         Err(err @ QuerySingleError::MultipleEntities(_)) => {
@@ -117,7 +117,7 @@ fn system_move_ui_nodes<C: Component>(
             return;
         }
     };
-    let (camera_entity, main_camera) = match cameras.get_single() {
+    let (camera_entity, main_camera) = match cameras.single() {
         Ok(camera) => camera,
         Err(QuerySingleError::NoEntities(_)) => return,
         Err(err @ QuerySingleError::MultipleEntities(_)) => {
