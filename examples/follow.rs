@@ -1,7 +1,6 @@
 //! Demonstrates how to work with Cubic curves.
 use bevy::{
     color::palettes::css::{ORANGE, SILVER, WHITE},
-    dev_tools::ui_debug_overlay::{DebugUiPlugin, UiDebugOptions},
     math::vec3,
     prelude::*,
 };
@@ -22,7 +21,6 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .insert_resource(uidebug)
-        .add_plugins(DebugUiPlugin)
         .add_plugins(AnchorUiPlugin::<CameraMarker>::new())
         .add_systems(Startup, setup)
         .add_systems(Update, animate_cube)
