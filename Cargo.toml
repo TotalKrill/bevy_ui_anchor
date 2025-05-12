@@ -9,9 +9,6 @@ repository = "https://github.com/TotalKrill/bevy_ui_anchor"
 keywords = ["bevy", "ui"]
 readme = "README.md"
 
-[dependencies]
-update = "0.0.0"
-
 [dependencies.bevy]
 version = "0.16.0"
 default-features = false
