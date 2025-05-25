@@ -18,7 +18,7 @@ fn main() {
     // uidebug.toggle();
     App::new()
         .add_plugins(DefaultPlugins)
-        .insert_resource(uidebug)
+        // .insert_resource(uidebug)
         .add_plugins(AnchorUiPlugin::<CameraMarker>::new())
         .add_systems(Startup, setup)
         .add_systems(Update, animate_cube)
