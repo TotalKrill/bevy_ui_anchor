@@ -3,7 +3,7 @@ use bevy::{
     prelude::*,
 };
 use bevy_rapier3d::prelude::*;
-use bevy_ui_anchor::{AnchorUiNode, AnchorUiPlugin};
+use bevy_ui_anchor::{AnchorPoint, AnchorUiConfig, AnchorUiPlugin, AnchoredUiNodes};
 
 fn main() {
     App::new()
@@ -104,18 +104,18 @@ pub fn setup_physics(
                 let z = k as f32 * shift - centerz + offset;
                 color += 1;
 
-                let target = commands
-                    .spawn((
-                        Transform::from_xyz(x, y, z),
-                        RigidBody::Dynamic,
-                        Collider::ball(rad),
-                        Mesh3d(mesh.clone()),
-                        MeshMaterial3d(materials[color % colors.len()].clone()),
-                        // ColliderDebugColor(colors[color % 3]),
-                    ))
-                    .id();
-                commands
-                    .spawn((
+                let mut ec = commands.spawn(());
+                // we want the target inside the spawned text fields
+                let target = ec.id();
+
+                ec.insert((
+                    Transform::from_xyz(x, y, z),
+                    RigidBody::Dynamic,
+                    Collider::ball(rad),
+                    Mesh3d(mesh.clone()),
+                    MeshMaterial3d(materials[color % colors.len()].clone()),
+                    // ColliderDebugColor(colors[color % 3]),
+                    AnchoredUiNodes::spawn_one((
                         Node {
                             border: UiRect::all(Val::Px(2.)),
                             ..Default::default()
@@ -123,23 +123,20 @@ pub fn setup_physics(
                         BorderColor(BLACK.into()),
                         BorderRadius::all(Val::Px(2.)),
                         Outline::default(),
-                        AnchorUiNode {
-                            target: bevy_ui_anchor::AnchorTarget::Entity(target),
-                            anchorwidth: bevy_ui_anchor::HorizontalAnchor::Right,
-                            anchorheight: bevy_ui_anchor::VerticalAnchor::Bottom,
+                        AnchorUiConfig {
+                            anchorpoint: AnchorPoint::middle(),
                             offset: None,
                         },
-                    ))
-                    .with_children(|p| {
-                        p.spawn((
+                        Children::spawn_one((
                             Text(format!("{target}")),
                             TextFont {
                                 font_size: 10.,
                                 ..Default::default()
                             },
                             TextColor(BLACK.into()),
-                        ));
-                    });
+                        )),
+                    )),
+                ));
             }
         }
 

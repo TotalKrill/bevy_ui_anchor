@@ -5,9 +5,7 @@ use bevy::{
     prelude::*,
 };
 
-use bevy_ui_anchor::{
-    AnchorTarget, AnchorUiNode, AnchorUiPlugin, HorizontalAnchor, VerticalAnchor,
-};
+use bevy_ui_anchor::{AnchorPoint, AnchorUiConfig, AnchorUiPlugin, AnchoredUiNodes};
 
 #[derive(Component)]
 struct Curve(CubicCurve<Vec3>);
@@ -16,7 +14,7 @@ struct Curve(CubicCurve<Vec3>);
 pub struct CameraMarker;
 
 fn main() {
-    let mut uidebug = UiDebugOptions::default();
+    // let mut uidebug = UiDebugOptions::default();
     // uidebug.toggle();
     App::new()
         .add_plugins(DefaultPlugins)
@@ -45,18 +43,14 @@ fn setup(
 
     // Make a CubicCurve
     let bezier = CubicBezier::new(points).to_curve().unwrap();
-    // Spawning a cube that the UI node will be anchored to
-    let target = commands
-        .spawn((
-            Mesh3d(meshes.add(Cuboid::new(0.3, 0.3, 0.3))),
-            MeshMaterial3d(materials.add(Color::from(ORANGE))),
-            Transform::from_translation(points[0][0]),
-            Curve(bezier),
-        ))
-        .id();
 
-    commands
-        .spawn((
+    // Spawn a cube with an anchored UI node
+    commands.spawn((
+        Mesh3d(meshes.add(Cuboid::new(0.3, 0.3, 0.3))),
+        MeshMaterial3d(materials.add(Color::from(ORANGE))),
+        Transform::from_translation(points[0][0]),
+        Curve(bezier),
+        AnchoredUiNodes::spawn_one((
             Node {
                 border: UiRect::all(Val::Px(2.)),
                 ..Default::default()
@@ -65,16 +59,13 @@ fn setup(
             BorderRadius::all(Val::Px(2.)),
             Outline::default(),
             // Anchor this UI node to the cube entity
-            AnchorUiNode {
-                target: AnchorTarget::Entity(target),
+            AnchorUiConfig {
+                anchorpoint: AnchorPoint::bottomright(),
                 offset: None,
-                anchorwidth: HorizontalAnchor::Right,
-                anchorheight: VerticalAnchor::Bottom,
             },
-        ))
-        .with_children(|p| {
-            p.spawn(Text("Text Anchored in bottom right".into()));
-        });
+            Children::spawn_one(Text("Text Anchored in bottom right".into())),
+        )),
+    ));
 
     // Some light to see something
     commands.spawn((
