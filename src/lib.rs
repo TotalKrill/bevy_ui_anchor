@@ -2,6 +2,11 @@ use std::marker::PhantomData;
 
 use bevy::{ecs::query::QuerySingleError, prelude::*, ui::UiSystem, window::PrimaryWindow};
 
+#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
+pub enum AnchorUiSystemSet {
+    MoveUiNodes,
+}
+
 /// Defines where the point that is anchored is located on the height of UI node that is anchored
 #[derive(Default, Reflect, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum VerticalAnchor {
@@ -124,11 +129,16 @@ impl<SingleCameraMarker: Component> AnchorUiPlugin<SingleCameraMarker> {
 
 impl<SingleCameraMarker: Component> Plugin for AnchorUiPlugin<SingleCameraMarker> {
     fn build(&self, app: &mut App) {
-        app.add_systems(
+        app.configure_sets(
             PostUpdate,
-            system_move_ui_nodes::<SingleCameraMarker>
+            AnchorUiSystemSet::MoveUiNodes
                 .before(TransformSystem::TransformPropagate)
                 .before(UiSystem::Layout),
+        );
+
+        app.add_systems(
+            PostUpdate,
+            system_move_ui_nodes::<SingleCameraMarker>.in_set(AnchorUiSystemSet::MoveUiNodes),
         );
 
         app.register_type::<AnchorUiNode>();
