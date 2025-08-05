@@ -29,9 +29,9 @@ pub enum HorizontalAnchor {
 /// this is the point on the UI that will match the in-world location of the entity
 pub struct AnchorPoint {
     /// Defines where the horizontal part of the UI tries to synchronize towards the chosen target
-    horizontal: HorizontalAnchor,
+    pub horizontal: HorizontalAnchor,
     /// Defines where the vertical part of the UI tries to synchronize towards the chosen target
-    vertical: VerticalAnchor,
+    pub vertical: VerticalAnchor,
 }
 
 impl AnchorPoint {
