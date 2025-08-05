@@ -69,7 +69,7 @@ impl AnchorPoint {
 
 /// relationship that defines which uinodes are anchored to this entity
 #[derive(Component, Reflect, Clone, Debug, PartialEq)]
-#[relationship_target(relationship = AnchorUiNode)]
+#[relationship_target(relationship = AnchorUiNode, linked_spawn)]
 pub struct AnchoredUiNodes(Vec<Entity>);
 
 /// Component that will continuosly update the UI location on screen, to match an in world location either chosen as a fixed
