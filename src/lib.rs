@@ -1,10 +1,14 @@
 use std::marker::PhantomData;
 
-use bevy::{ecs::query::QuerySingleError, prelude::*, ui::UiSystem, window::PrimaryWindow};
+use bevy::{
+    ecs::query::QuerySingleError, prelude::*, render::view::VisibilitySystems, ui::UiSystem,
+    window::PrimaryWindow,
+};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum AnchorUiSystemSet {
     MoveUiNodes,
+    UpdateVisibility,
 }
 
 /// Defines where the point that is anchored is located on the height of UI node that is anchored
@@ -76,7 +80,7 @@ pub struct AnchoredUiNodes(Vec<Entity>);
 /// position, or chosen as another entities ['GlobalTransformation']
 #[derive(Component, Reflect, Clone, Debug, PartialEq)]
 #[relationship(relationship_target = AnchoredUiNodes)]
-#[require(AnchorUiConfig, Node)]
+#[require(AnchorUiConfig, Node, AnchorUiVisibility)]
 pub struct AnchorUiNode {
     /// The Ui will be placed onto the screen, matching where this entity is located in the world
     #[relationship]
@@ -91,6 +95,17 @@ pub struct AnchorUiConfig {
     /// Offset will be calculated for the 'AnchorTarget'
     /// and the chosen anchoring of the UI element, and can be used to put UI elements away from what they are targeted to
     pub offset: Option<Vec3>,
+
+    /// Follows the visibilty of the anchored UI node
+    ///
+    /// Ie, if the entity that this Ui is anchored to has a visibility of false, this UI node will get its 'node.display' set to 'Display::None'
+    /// if this is set, 'AnchorUiPlugin' will change the 'Visibilty' Component for this between 'Visibility::Visible' and 'Visibility::Hidden'
+    pub follow_visibility: bool,
+
+    /// This will explicitly change the visibility of the UI node to False if the followed entity is outside the camera
+    ///
+    /// if this is set, 'AnhchorUiPlugin' will will modify the 'Visibilty' Component for this between 'Visibility::Visible' and 'Visibility::Hidden'
+    pub hide_outside_camera: bool,
 }
 
 impl AnchorUiConfig {
@@ -135,13 +150,76 @@ impl<SingleCameraMarker: Component> Plugin for AnchorUiPlugin<SingleCameraMarker
                 .before(TransformSystem::TransformPropagate)
                 .before(UiSystem::Layout),
         );
+        app.configure_sets(
+            PostUpdate,
+            AnchorUiSystemSet::UpdateVisibility.after(VisibilitySystems::VisibilityPropagate),
+        );
 
         app.add_systems(
             PostUpdate,
             system_move_ui_nodes::<SingleCameraMarker>.in_set(AnchorUiSystemSet::MoveUiNodes),
         );
+        app.add_systems(
+            PostUpdate,
+            (system_follow_visibility, system_update_visibility_of_uinode)
+                .chain()
+                .in_set(AnchorUiSystemSet::UpdateVisibility),
+        );
 
         app.register_type::<AnchorUiNode>();
+    }
+}
+
+#[derive(Component, PartialEq, Eq, Default)]
+#[require(Visibility)]
+struct AnchorUiVisibility {
+    pub outside_camera: bool,
+    pub anchor_visible: bool,
+}
+
+fn system_follow_visibility(
+    followed: Query<&InheritedVisibility>,
+    uinodes: Query<(&mut AnchorUiVisibility, &AnchorUiNode)>,
+) {
+    for (mut visibility, anchor) in uinodes {
+        if let Ok(followed_visibility) = followed.get(anchor.target) {
+            visibility.anchor_visible = followed_visibility.get();
+        }
+    }
+}
+
+fn system_update_visibility_of_uinode(
+    uinodes: Query<(&mut Visibility, &AnchorUiVisibility, &AnchorUiConfig)>,
+) {
+    for (mut visibility, anchor_vis, config) in uinodes {
+        match (config.hide_outside_camera, config.follow_visibility) {
+            (true, true) => {
+                if anchor_vis.outside_camera {
+                    *visibility = Visibility::Hidden;
+                } else {
+                    if anchor_vis.anchor_visible {
+                        visibility.set_if_neq(Visibility::Visible);
+                    } else {
+                        visibility.set_if_neq(Visibility::Hidden);
+                    }
+                }
+            }
+            (false, true) => {
+                if anchor_vis.anchor_visible {
+                    visibility.set_if_neq(Visibility::Visible);
+                } else {
+                    visibility.set_if_neq(Visibility::Hidden);
+                }
+            }
+            (true, false) => {
+                if anchor_vis.outside_camera {
+                    visibility.set_if_neq(Visibility::Hidden);
+                } else {
+                    visibility.set_if_neq(Visibility::Visible);
+                }
+            }
+            (false, false) => {}
+        }
     }
 }
 
@@ -151,6 +229,7 @@ fn system_move_ui_nodes<C: Component>(
     mut uinodes: Query<(
         Entity,
         &mut Node,
+        &mut AnchorUiVisibility,
         &ComputedNode,
         &AnchorUiNode,
         &AnchorUiConfig,
@@ -178,7 +257,7 @@ fn system_move_ui_nodes<C: Component>(
         return;
     };
 
-    for (uientity, mut node, computed_node, uinode, uianchorconf) in uinodes.iter_mut() {
+    for (uientity, mut node, mut vis, computed_node, uinode, uianchorconf) in uinodes.iter_mut() {
         if node.display == Display::None {
             // The node is not displayed, skip it
             continue;
@@ -202,10 +281,13 @@ fn system_move_ui_nodes<C: Component>(
         let Ok(position) =
             main_camera.world_to_viewport_with_depth(&main_camera_transform, world_location)
         else {
-            // Object is offscreen and should not be drawn
+            // Object is offscreen
             bevy::log::debug!("world location is offscreen, and thus we dont change the position");
+            vis.outside_camera = true;
             continue;
         };
+
+        vis.outside_camera = false;
 
         if node.as_ref().position_type != PositionType::Absolute {
             node.position_type = PositionType::Absolute;
