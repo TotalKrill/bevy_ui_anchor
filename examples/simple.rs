@@ -45,12 +45,13 @@ fn setup(
             AnchorUiConfig {
                 anchorpoint: AnchorPoint::bottomleft(),
                 offset: Some(Vec3::new(0.0, 0.5, 0.0)),
+                ..Default::default()
             },
             Node {
                 border: UiRect::all(Val::Px(2.)),
                 ..Default::default()
             },
-            BorderColor(WHITE.into()),
+            BorderColor::all(WHITE),
             BorderRadius::all(Val::Px(2.)),
             Outline::default(),
             Children::spawn_one(

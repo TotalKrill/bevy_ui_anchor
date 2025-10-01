@@ -55,13 +55,14 @@ fn setup(
                 border: UiRect::all(Val::Px(2.)),
                 ..Default::default()
             },
-            BorderColor(WHITE.into()),
+            BorderColor::all(WHITE),
             BorderRadius::all(Val::Px(2.)),
             Outline::default(),
             // Anchor this UI node to the cube entity
             AnchorUiConfig {
                 anchorpoint: AnchorPoint::bottomright(),
                 offset: None,
+                ..Default::default()
             },
             Children::spawn_one(Text("Text Anchored in bottom right".into())),
         )),

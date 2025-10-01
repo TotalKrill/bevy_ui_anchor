@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use bevy::{
-    ecs::query::QuerySingleError, prelude::*, render::view::VisibilitySystems, ui::UiSystem,
+    camera::visibility::VisibilitySystems, ecs::query::QuerySingleError, prelude::*, ui::UiSystems,
     window::PrimaryWindow,
 };
 
@@ -67,6 +67,12 @@ impl AnchorPoint {
         Self {
             horizontal: HorizontalAnchor::Mid,
             vertical: VerticalAnchor::Mid,
+        }
+    }
+    pub fn bottommid() -> Self {
+        Self {
+            horizontal: HorizontalAnchor::Mid,
+            vertical: VerticalAnchor::Bottom,
         }
     }
 }
@@ -147,8 +153,8 @@ impl<SingleCameraMarker: Component> Plugin for AnchorUiPlugin<SingleCameraMarker
         app.configure_sets(
             PostUpdate,
             AnchorUiSystemSet::MoveUiNodes
-                .before(TransformSystem::TransformPropagate)
-                .before(UiSystem::Layout),
+                .before(TransformSystems::Propagate)
+                .before(UiSystems::Layout),
         );
         app.configure_sets(
             PostUpdate,
