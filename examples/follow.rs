@@ -53,10 +53,10 @@ fn setup(
         AnchoredUiNodes::spawn_one((
             Node {
                 border: UiRect::all(Val::Px(2.)),
+                border_radius: BorderRadius::all(px(2)),
                 ..Default::default()
             },
             BorderColor::all(WHITE),
-            BorderRadius::all(Val::Px(2.)),
             Outline::default(),
             // Anchor this UI node to the cube entity
             AnchorUiConfig {

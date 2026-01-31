@@ -118,14 +118,15 @@ pub fn setup_physics(
                     AnchoredUiNodes::spawn_one((
                         Node {
                             border: UiRect::all(Val::Px(2.)),
+                            border_radius: BorderRadius::all(px(2)),
                             ..Default::default()
                         },
-                        BorderColor(BLACK.into()),
-                        BorderRadius::all(Val::Px(2.)),
+                        BorderColor::all(BLACK),
                         Outline::default(),
                         AnchorUiConfig {
                             anchorpoint: AnchorPoint::middle(),
                             offset: None,
+                            ..Default::default()
                         },
                         Children::spawn_one((
                             Text(format!("{target}")),
