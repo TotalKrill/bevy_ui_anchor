@@ -49,10 +49,10 @@ fn setup(
             },
             Node {
                 border: UiRect::all(Val::Px(2.)),
+                border_radius: BorderRadius::all(px(3)),
                 ..Default::default()
             },
             BorderColor::all(WHITE),
-            BorderRadius::all(Val::Px(2.)),
             Outline::default(),
             Children::spawn_one(
                 // text
