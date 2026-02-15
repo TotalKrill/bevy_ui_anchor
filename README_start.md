@@ -18,6 +18,7 @@ Provides an AnchorUiNode component that:
 
 | Bevy version | Crate version |
 | ------------ | ------------------------ |
+| 0.18         | 0.11                     |
 | 0.17         | 0.10                     |
 | 0.16         | 0.6 - 0.9                |
 | 0.15         | 0.3 - 0.5                |
