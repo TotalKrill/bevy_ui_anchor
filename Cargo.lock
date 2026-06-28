@@ -1688,7 +1688,7 @@ dependencies = [
 
 [[package]]
 name = "bevy_ui_anchor"
-version = "0.11.0"
+version = "0.12.0"
 dependencies = [
  "bevy",
  "bevy_editor_cam",
