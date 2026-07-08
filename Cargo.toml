@@ -1,6 +1,6 @@
 [package]
 name = "bevy_ui_anchor"
-version = "0.11.0"
+version = "0.12.0"
 authors = ["Kristoffer Ödmark <kristoffer.odmark90@gmail.com>"]
 edition = "2021"
 description = "A small bevy plugin for anchoring UI elements to specific points or entities in the world "
@@ -9,23 +9,33 @@ repository = "https://github.com/TotalKrill/bevy_ui_anchor"
 keywords = ["bevy", "ui"]
 readme = "README.md"
 
+[features]
+_rapier_example = ["dep:bevy_rapier3d", "dep:bevy_editor_cam"]
+
 [dependencies.bevy]
-version = "0.18.0"
+version = "0.19.0"
 default-features = false
 features = ["bevy_ui", "bevy_window", "bevy_log"]
 
 [dev-dependencies.bevy]
-version = "0.18"
+version = "0.19.0"
 features = ["bevy_ui_debug", "bevy_ui"]
 
-[dev-dependencies.bevy_rapier3d]
-# git = "https://github.com/Vrixyz/bevy_rapier.git"
-# branch = "master-bevy_0.15"
+[dependencies.bevy_rapier3d]
+# https://github.com/dimforge/bevy_rapier/pull/694
+# The above PR still has some issues regarding a glam version conflict.
+# The rapier example will not work before this pull request is merged.
 git = "https://github.com/Buncys/bevy_rapier.git"
-branch = "bevy-0.18.0"
+branch = "bevy-0.19.0"
+optional = true
 #version = "0.30"
 
-[dev-dependencies.bevy_editor_cam]
-# git = "https://github.com/m-edlund/bevy_editor_cam.git"
-git = "https://github.com/logankaser/bevy_editor_cam.git"
-branch = "main"
+[dependencies.bevy_editor_cam]
+# https://github.com/aevyrie/bevy_editor_cam/pull/66
+git = "https://github.com/m-edlund/bevy_editor_cam.git"
+branch = "bevy-0.19"
+optional = true
+
+[[example]]
+name = "rapier"
+required-features = ["_rapier_example"]

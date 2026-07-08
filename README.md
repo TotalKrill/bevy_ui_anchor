@@ -16,8 +16,9 @@ Provides an AnchorUiNode component that:
 - Supports horizontal and vertical anchoring.
 - Compatible with Bevy's ECS architecture.
 
-| Bevy version | Crate version |
+| Bevy version | Crate version            |
 | ------------ | ------------------------ |
+| 0.19         | 0.12                     |
 | 0.18         | 0.11                     |
 | 0.17         | 0.10                     |
 | 0.16         | 0.6 - 0.9                |
