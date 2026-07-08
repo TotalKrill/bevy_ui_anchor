@@ -21,7 +21,7 @@ features = ["bevy_ui", "bevy_window", "bevy_log"]
 version = "0.19.0"
 features = ["bevy_ui_debug", "bevy_ui"]
 
-[dependencies.bevy_rapier3d]
+[dev-dependencies.bevy_rapier3d]
 # https://github.com/dimforge/bevy_rapier/pull/694
 # The above PR still has some issues regarding a glam version conflict.
 # The rapier example will not work before this pull request is merged.
@@ -30,7 +30,7 @@ branch = "bevy-0.19.0"
 optional = true
 #version = "0.30"
 
-[dependencies.bevy_editor_cam]
+[dev-dependencies.bevy_editor_cam]
 # https://github.com/aevyrie/bevy_editor_cam/pull/66
 git = "https://github.com/m-edlund/bevy_editor_cam.git"
 branch = "bevy-0.19"
