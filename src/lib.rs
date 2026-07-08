@@ -150,8 +150,14 @@ pub struct AnchorUiPlugin<SingleCameraMarker: Component> {
 impl<SingleCameraMarker: Component> AnchorUiPlugin<SingleCameraMarker> {
     pub fn new() -> Self {
         Self {
-            _component: PhantomData::default(),
+            _component: PhantomData,
         }
+    }
+}
+
+impl<SingleCameraMarker: Component> Default for AnchorUiPlugin<SingleCameraMarker> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

@@ -10,7 +10,9 @@ keywords = ["bevy", "ui"]
 readme = "README.md"
 
 [features]
-_rapier_example = ["dep:bevy_rapier3d", "dep:bevy_editor_cam"]
+# Re-enable this feature once bevy_rapier3d and bevy_editor_cam have crates.io
+# releases compatible with the Bevy version used by this crate.
+# _rapier_example = ["dep:bevy_rapier3d", "dep:bevy_editor_cam"]
 
 [dependencies.bevy]
 version = "0.19.0"
@@ -21,21 +23,21 @@ features = ["bevy_ui", "bevy_window", "bevy_log"]
 version = "0.19.0"
 features = ["bevy_ui_debug", "bevy_ui"]
 
-[dev-dependencies.bevy_rapier3d]
+# [dev-dependencies.bevy_rapier3d]
 # https://github.com/dimforge/bevy_rapier/pull/694
-# The above PR still has some issues regarding a glam version conflict.
-# The rapier example will not work before this pull request is merged.
-git = "https://github.com/Buncys/bevy_rapier.git"
-branch = "bevy-0.19.0"
-optional = true
-#version = "0.30"
-
-[dev-dependencies.bevy_editor_cam]
+# The rapier example needs a bevy_rapier3d release compatible with Bevy 0.19.
+# git = "https://github.com/Buncys/bevy_rapier.git"
+# branch = "bevy-0.19.0"
+# optional = true
+# version = "0.30"
+#
+# [dev-dependencies.bevy_editor_cam]
 # https://github.com/aevyrie/bevy_editor_cam/pull/66
-git = "https://github.com/m-edlund/bevy_editor_cam.git"
-branch = "bevy-0.19"
-optional = true
-
-[[example]]
-name = "rapier"
-required-features = ["_rapier_example"]
+# The rapier example needs a bevy_editor_cam release compatible with Bevy 0.19.
+# git = "https://github.com/m-edlund/bevy_editor_cam.git"
+# branch = "bevy-0.19"
+# optional = true
+#
+# [[example]]
+# name = "rapier"
+# required-features = ["_rapier_example"]
